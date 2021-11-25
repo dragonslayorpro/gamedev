@@ -1,12 +1,49 @@
-Rigidbody rb;
-public float speed;
- 
-void Start () {
-  rb = GetComponent<Rigidbody>();
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class RaycastMovement : MonoBehaviour
+{
+    private Rigidbody rb;
+    public float speed=50;
+    public float jumpHeight=200;
+    public float timeOfLastJump;
+    // Start is called before the first frame update
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        if (Input.GetKey(KeyCode.W))
+        {
+            rb.AddForce(new Vector3(speed, 0, 0));
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            rb.AddForce(new Vector3(0, 0, speed));
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            rb.AddForce(new Vector3(-1f * speed, 0, 0));
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            rb.AddForce(new Vector3(0, 0, -1f * speed));
+        }
+        if (Input.GetKey(KeyCode.Space)&&Time.time-timeOfLastJump>=0.2f)
+        {
+            if (Physics.Raycast(transform.position,transform.TransformDirection(Vector3.down),0.5f))
+            {
+                timeOfLastJump = Time.time;
+                rb.AddForce(0, jumpHeight, 0);
+            }
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * 0.1f,Color.red,1f);
+        }
+    }
 }
 
-void FixedUpdate () {
-  float mH = Input.GetAxis ("Horizontal");
-  float mV = Input.GetAxis ("Vertical");
-  rb.velocity = new Vector3 (mH * speed, rb.velocity.y, mV * speed);
-}
